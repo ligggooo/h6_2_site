@@ -18,11 +18,11 @@
     <div class="article">
     <h4><a href="/{{ article.user.username }}/articles/{{ article.nid }}">{{ article.title }} </a></h4>
     <div class="article_desc">
-        <span class="media-left"><a href=""><img class='article_avatar' src="{{ article.user.avatar.url }}" alt=""></a></span>
+        <span class="media-left"><a href="/{{ article.user.username }}"><img class='article_avatar' src="{{ article.user.avatar.url }}" alt=""></a></span>
         <span class="media-right">{{ article.desc | truncatechars:120 }}</span>
     </div>
     <div class="attachments">
-        <span class="by"><a class="author" href="">{{ article.user.username }}</a></span>&nbsp;&nbsp;
+        <span class="by"><a class="author" href="/{{ article.user.username }}">{{ article.user.username }}</a></span>&nbsp;&nbsp;
         <span>发布于&nbsp;{{ article.create_time|date:"Y-m-d H:i:s" }}</span>&nbsp;&nbsp;
         <span class="glyphicon glyphicon-comment"><a href="/{{ article.user.username }}/articles/{{ article.nid }}">评论({{ article.comment_count }})</a></span>&nbsp;&nbsp;
         <span class="glyphicon glyphicon-thumbs-up"><a href="/{{ article.user.username }}/articles/{{ article.nid }}">喜欢({{ article.up_count }})</a></span>&nbsp;&nbsp;

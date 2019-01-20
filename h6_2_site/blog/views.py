@@ -4,6 +4,7 @@ from django.http import JsonResponse
 from django.contrib import auth
 from django.contrib.auth.decorators import login_required
 from django.db.models import Count,F
+from django.core.paginator import Paginator,PageNotAnInteger,EmptyPage
 
 import json
 import time
@@ -20,8 +21,20 @@ from blog.myform import UserForm
 
 # @login_required
 def index(request):
+    page_num = request.GET.get('page',1)
     user = request.user
-    articles = Article.objects.all()
+    articles = Article.objects.all().order_by('create_time').reverse()
+    # 分页器
+    paginator = Paginator(articles, 10)
+    page = request.GET.get('page', 1)
+    currentPage = int(page)
+
+    try:
+        articles = paginator.page(page)
+    except PageNotAnInteger:
+        articles = paginator.page(1)
+    except EmptyPage:
+        articles = paginator.page(paginator.num_pages)
     return render(request, 'blog/index.html', locals())
 
 
@@ -113,9 +126,13 @@ def user_site(request,username,type=None,params=None):
         from django.db.models.functions import TruncDate
         if params and type:
             if type=='cate':
-                articles = articles.filter(category__nid=params)
+                if params=='none':
+                    articles = articles.filter(category__nid=None)
+                    main_title_2 = '未分类'
+                else:
+                    articles = articles.filter(category__nid=params)
+                    main_title_2 = Category.objects.get(nid=params).title
                 main_title_1 = '分类'
-                main_title_2=Category.objects.get(nid=params).title
 
             elif type=='tag':
                 main_title_1 = '标签'

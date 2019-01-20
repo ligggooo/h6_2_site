@@ -7,7 +7,7 @@ from django.contrib.auth.models import AbstractUser
 class UserInfo(AbstractUser):
     nid = models.AutoField(primary_key=True)
     telephone = models.CharField(max_length=11, null=True, unique=True)
-    avatar = models.FileField(upload_to='avatars/', default="/avatars/default.png")
+    avatar = models.FileField(upload_to='avatars/', default="avatars/default.png")
     # 1 https://docs.djangoproject.com/en/2.1/ref/models/fields/#filefield
     create_time = models.DateTimeField(verbose_name='创建时间', auto_now_add=True)
     # 2

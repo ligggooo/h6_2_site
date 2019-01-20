@@ -14,7 +14,7 @@
 <body style="background-color: #d7d7d7;">
 {% include 'blog/head_bar.html' with blog_active='active' %}
 <div class="page-header container-fluid white" style="margin-top: 10px    ;">
-    <h1 ><em>{{ user.blog.title }} - <a href="/{{ user.username }}">{{ user.username }}</em></a>
+    <h1 ><em>{{ user.blog.title }} - <a href="/{{ user.username }}">{{ user.username }}</a></em>
         <small><em>&nbsp;<small>{{ main_title_1 }}</small>&nbsp;{{ main_title_2 }}
         &nbsp;&nbsp;&nbsp;&nbsp;<a href="/{{ user.username }}" style="font-size: medium">全部</a></em></small>
     </h1>
@@ -37,7 +37,12 @@
                 </div>
                 {% for cate in categories %}
                     <div class="panel-body">
+                    {% if not cate.0 %}
+                        <a href="/{{ user.username }}/cate/none">{{ cate.1 }}({{ cate.2 }})</a>
+                    {% else %}
                         <a href="/{{ user.username }}/cate/{{ cate.0 }}">{{ cate.1 }}({{ cate.2 }})</a>
+                    {% endif %}
+
                     </div>
                 {% endfor %}
             </div>

@@ -29,10 +29,34 @@
             <div class="article_list">
                 {% include 'blog/article_thumbnail.html' %}
             </div>
+            <nav aria-label="Page navigation" id="pager">
+                <ul class="pagination">
+                    {% if articles.has_previous %}
+                        <li class="previous"><a href="/index/?page={{ articles.previous_page_number }}">上一页</a></li>
+                    {% else %}
+                        <li class="previous disabled"><a href="#">上一页</a></li>
+                    {% endif %}
+                    {% for num in paginator.page_range %}
+
+                        {% if num == currentPage %}
+                            <li class="item active"><a href="/index/?page={{ num }}">{{ num }}</a></li>
+                        {% else %}
+                            <li class="item"><a href="/index/?page={{ num }}">{{ num }}</a></li>
+
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if book_list.has_next %}
+                        <li class="next"><a href="/index/?page={{ articles.next_page_number }}">下一页</a></li>
+                    {% else %}
+                        <li class="next disabled"><a href="#">下一页</a></li>
+                    {% endif %}
+                </ul>
+            </nav>
         </div>
         <div class="col-sm-3">
             <div class="panel panel-warning">
-              <div class="panel-heading">最新新闻</div>
+                <div class="panel-heading">最新新闻</div>
                 <ul class="list-group">
                     <li class="list-group-item"><a href="">拼多多不哭，薅羊毛的江湖水太深</a></li>
                     <li class="list-group-item"><a href="">还未推出 迪士尼流媒体服务就花了逾10亿美元</a></li>
@@ -43,10 +67,10 @@
             </div>
 
             <div class="panel panel-danger">
-              <div class="panel-heading">
-                <h3 class="panel-title">48小时热门</h3>
-              </div>
-              <ul class="list-group">
+                <div class="panel-heading">
+                    <h3 class="panel-title">48小时热门</h3>
+                </div>
+                <ul class="list-group">
                     <li class="list-group-item"><a href="">第一次离职</a></li>
                     <li class="list-group-item"><a href="">ASP.NET Core API 接收参数去掉烦人的 [FromBody]</a></li>
                     <li class="list-group-item"><a href="">恭贺微软技术俱乐部苏州站正式成立</a></li>
