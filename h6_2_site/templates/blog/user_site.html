@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    {% include 'blog/static_src.html' %}
+    <style type="text/css">
+    .white{
+        background-color: white;
+        border-radius: 5px;
+    }
+    </style>
+    <title>{{ user.username }}-{{ user.blog.title }}--{{ main_title_1 }}--{{ main_title_2 }}</title>
+</head>
+<body style="background-color: #d7d7d7;">
+{% include 'blog/head_bar.html' with blog_active='active' %}
+<div class="page-header container-fluid white" style="margin-top: 10px    ;">
+    <h1 ><em>{{ user.blog.title }} - <a href="/{{ user.username }}">{{ user.username }}</em></a>
+        <small><em>&nbsp;<small>{{ main_title_1 }}</small>&nbsp;{{ main_title_2 }}
+        &nbsp;&nbsp;&nbsp;&nbsp;<a href="/{{ user.username }}" style="font-size: medium">全部</a></em></small>
+    </h1>
+</div>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-3">
+            <div class="panel panel-warning">
+                <div class="panel-heading">我的标签</div>
+                {% for tag in tags %}
+                    <div class="panel-body">
+                        <a href="/{{ user.username }}/tag/{{ tag.nid }}">{{ tag.title }}({{ tag.c }})</a>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <div class="panel panel-danger">
+                <div class="panel-heading">
+                    <h3 class="panel-title">我的分类</h3>
+                </div>
+                {% for cate in categories %}
+                    <div class="panel-body">
+                        <a href="/{{ user.username }}/cate/{{ cate.0 }}">{{ cate.1 }}({{ cate.2 }})</a>
+                    </div>
+                {% endfor %}
+            </div>
+            <div class="panel panel-success">
+                <div class="panel-heading">
+                    <h3 class="panel-title">随笔档案</h3>
+                </div>
+                {% for date_record in date_records %}
+                    <div class="panel-body">
+                        <a href="/{{ user.username }}/date/{{ date_record.d }}">{{ date_record.d }}({{ date_record.c }})</a>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="col-sm-9">
+            {%  block main_area %}
+            <div class="article_list white">
+                {% include 'blog/article_thumbnail_for_user_site.html' %}
+            </div>
+            {% endblock %}
+        </div>
+    </div>
+</div>
+</body>
+</html>

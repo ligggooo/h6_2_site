@@ -1,0 +1,66 @@
+{% extends 'blog/backend.html'%}
+
+{% block title %}
+    添加文章
+{% endblock %}
+
+{% block title2 %}
+    添加文章
+{% endblock %}
+
+
+{% block main_area %}
+    <form>
+        <div class="form-group">
+            <label for="title">文章标题</label>
+            <input type="text" class="form-control" id="title" placeholder="标题">
+        </div>
+        <div class="form-group">
+            <label for="editor_id">内容</label>
+            <textarea id="editor_id" name="content" style="width:700px;height:300px;">
+                &lt;strong&gt;文章内容&lt;/strong&gt;
+            </textarea>
+        </div>
+        <div class="form-group">
+            <a href="" class="btn btn-success" id="submit_btn">提交</a>
+        </div>
+        <script charset="utf-8" src="/static/kindeditor/kindeditor-all-min.js"></script>
+        <script charset="utf-8" src="/static/kindeditor/lang/zh-CN.js"></script>
+        <script>
+            KindEditor.ready(function(K) {
+                var options = {
+                        cssPath : '/css/index.css',
+                        filterMode : true,
+                        resizeType : 1,
+                        width:'100%',
+                        uploadJson:'/upload/',
+                        extraFileUploadParams : {
+                        csrfmiddlewaretoken:$('[name=csrfmiddlewaretoken]').val()
+                        }
+                };
+                window.editor = K.create('#editor_id',options);
+            });
+
+            $('#submit_btn').click(function () {
+                html = editor.html();
+                console.log(html);
+                $.ajax({
+                    url:'/backend/add_article/',
+                    type:'POST',
+                    data: {
+                        csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+                        article_content: html,
+                        title:$('#title').val()
+                    },
+                    success: function (data) {
+                        console.log(data.msg);
+                        if (data.status===0){
+                            location.href='/backend/';
+                        }
+                    }
+                });
+                return false;
+            })
+        </script>
+    </form>
+{% endblock %}

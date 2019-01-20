@@ -1,0 +1,232 @@
+{% extends 'blog/user_site.html ' %}
+
+
+{% block main_area %}
+    <style type="text/css">
+        #up, #down {
+            float: left;
+            width: 46px;
+            height: 52px;
+            text-align: center;
+            cursor: pointer;
+            margin-top: 2px;
+            padding-top: 5px;
+        }
+
+        #up {
+            background: url("/static/images/upup.gif") no-repeat;
+        }
+
+        #down {
+            background: url("/static/images/downdown.gif") no-repeat;
+            margin-left: 20px;
+        }
+
+        #digg_tips {
+            color: red;
+            text-align: center;
+            display: block;
+            margin-top: 80px;
+        }
+
+        .border {
+            border: 1px solid black;
+        }
+        .blog_comment_body{padding: 5px;}
+        .feedbacktitle{padding-left: 5px;}
+        .comment_actions{margin-right: 10px;}
+    </style>
+    <div class="article">
+        <div class="panel panel-info">
+            {% csrf_token %}
+            <div class="panel-heading">{{ article.title }}</div>
+            <div class="panel-body">
+                <strong>引言</strong>
+                <p>{{ article.desc }}</p>
+            </div>
+            <div class="panel-body">
+                <strong>正文</strong>
+                <p>{{ article.content|safe }}</p>
+            </div>
+            <div class="panel-body ">
+                <div class="up_down pull-right clearfix">
+                    <a href="?up=1" id="up" class="up action">{{ article.up_count }}</a>
+                    <a href="?down=1" id="down" class="down action">{{ article.down_count }}</a>
+                    <div class="diggword" id="digg_tips">
+                        <span id="dig_msg"></span>
+                        <a href="/login/" id="dig_login" style="visibility: hidden">登录</a>
+                    </div>
+                </div>
+            </div>
+            <script type="text/javascript">
+                $(function () {
+                    $('.up_down .action').click(function () {
+                        let t = $(this);
+                        let is_up = $(this).hasClass('up');
+                        console.log(is_up);
+                        $('#dig_msg').text('');
+                        $.ajax({
+                            url: '/dig_up/',
+                            type: 'POST',
+                            data: {
+                                csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+                                article_id:{{ article.nid }},
+                                is_up: is_up
+                            },
+                            success: function (data) {
+                                console.log(data);
+                                let t1 = $('.up_down #up');
+                                let t2 = $('.up_down #down');
+                                let m = $('#dig_msg');
+                                if (data.code === 1) {
+                                    $('#dig_login').css('visibility', 'visible');
+                                    m.text(data.msg);
+                                } else if (data.code === 2) {
+                                    m.text(data.msg);
+                                } else if (data.code === 3) {
+                                    let val = is_up ? '已经赞过了' : '已经踩过了';
+                                    m.text(val);
+                                }
+                                else if (data.code === 0) {
+                                    t.text(eval(t.text()) + 1);
+                                } else if (data.code === 4) {
+                                    if (is_up) {
+                                        t1.text(eval(t1.text()) + 1);
+                                        t2.text(eval(t2.text()) - 1);
+                                    } else {
+                                        t1.text(eval(t1.text()) - 1);
+                                        t2.text(eval(t2.text()) + 1);
+                                    }
+                                }
+                            }
+                        });
+                        return false;
+                    })
+                })
+            </script>
+        </div>
+    </div>
+    <div class="panel panel-info white">
+        <div class="panel-heading"><h4>评论：</h4></div>
+        {% for comment in comments %}
+                <div class="panel-body border blog_comment_body" id="comment#{{ comment.0 }}" nid="{{ comment.0 }}" name="#{{ forloop.counter }}楼">
+                    <div class="feedbacktitle border">
+                        <a href="" class="layer">#{{ forloop.counter }}楼</a><a name="4155761" id="{{ comment.0 }}"></a>&nbsp;
+                        <span class="comment_date">{{ comment.4|date:"Y-m-d H:i:s" }}</span>&nbsp;
+                        <a href="/{{ comment.2 }}" target="{{ comment.5 }}">{{ comment.2 }}</a>
+                    </div>
+                    <div align="left" class="feedbackcontent border clearfix">
+                        <div class="comment_content">{{ comment.3 }}
+                            <span class="comment_actions pull-right" ><a href="" class="comment_on_comment">回复</a></span>
+                        </div>
+                    </div>
+                </div>
+        {% endfor %}
+    </div>
+    <div id="comment_form" class="commentform">
+        <a name="commentform"></a>
+        <div id="divCommentShow"></div>
+        <div id="comment_nav">
+            <span id="span_refresh_tips"></span>
+            <a href="#top">返回顶部</a>
+        </div>
+        <div id="comment_form_container" class="border">
+            <div id="commentform_title">发表评论</div>
+            <span id="tip_comment" style="color:Red"></span>
+            <p>昵称：<input type="text" id="tbCommentAuthor" class="author" disabled="disabled" size="20"
+                         value="{{ request.user.username }}">&nbsp; to&nbsp;
+                <span id="comment_to" to="_blank" style="color:Red">这篇文章</span><a href="" id="to_article" style="margin-left: 20px  ">回复文章</a></p>
+            {#      这里设置评论的对象          #}
+            <div class="commentbox_main">
+                <div class="commentbox_title">
+                    <div class="commentbox_title_left">评论内容：</div>
+                </div>
+                <textarea id="tbCommentBody" class="comment_textarea" cols="100"></textarea>
+            </div>
+            <p id="commentbox_opt">
+                <input id="btn_comment_submit" type="button" class="comment_btn" value="提交评论">
+                <span id="comment_msg" style="color: red">&nbsp;</span>
+            </p>
+            <script type="text/javascript">
+                $(function () {
+                    $('#btn_comment_submit').click(function () {
+                        let text = $('#tbCommentBody').val();
+                        $('#tbCommentBody').val('');
+                        $.ajax({
+                            url:'/comment/',
+                            type:'POST',
+                            data:{
+                                csrfmiddlewaretoken:$("[name=csrfmiddlewaretoken]").val(),
+                                target:$('span#comment_to').attr('to'),
+                                article_id:'{{ article.nid }}',
+                                content:text
+                            },
+                            success:function (data) {
+                                console.log(data);
+                                if(data.status===0){
+                                    window.location.reload();
+                                }else{
+                                    $('#comment_msg').text('data.msg');
+                                }
+                            }
+                        });
+                        return false;
+                    });
+                    {# 自执行的评论树载入#}
+                    (function () {
+                        $.ajax({
+                            url:'/get_comments/',
+                            type:'POST',
+                            data:{
+                                csrfmiddlewaretoken:$("[name=csrfmiddlewaretoken]").val(),
+                                article_id:'{{ article.nid }}',
+                            },
+                            success:function (data) {
+                                if (data.status===0){
+                                    make_comment_tree(data.msg);
+                                }
+                            }
+                        });
+                    })()
+                });
+                {#绑定回复按钮#}
+                $('.comment_on_comment').click(function () {
+                    let target = $(this).parents('.blog_comment_body');
+                    $('span#comment_to').attr('to',target.attr('nid'));
+                    $('span#comment_to').text(target.attr('name'));
+                    $("body,html").animate({
+			            scrollTop:$("#commentbox_opt").offset().top-74
+                    },0);
+                    return false;
+                });
+                $('#to_article').click(function () {
+                    $('span#comment_to').attr('to','_blank');
+                    $('span#comment_to').text('这篇文章');
+                    return false;
+                });
+
+                {#                其他函数#}
+                function make_comment_tree(comments) {
+                    for (let i=0;i<comments.length;i++){
+                        let c = comments[i];
+                        console.log(c);
+                        if (c.parent_comment__nid != null){
+                            let id = c.parent_comment__nid;
+                            $(`div.blog_comment_body[nid=${id}]`).children('div.feedbackcontent').append(`
+                                <div align="left" class="feedbackcontent border clearfix" style="margin:5px 20px;">
+                                    <div class="comment_content">${c.content}</div>
+                                    <span class='pull-right' style="margin-right:35px">
+                                        &nbsp;
+                                        <span class="comment_date">${c.create_time}</span>&nbsp;
+                                        <a href="/${c.user__username}">${c.user__username}</a>
+                                    </span>
+                                </div>`)
+                        }
+                    }
+                }
+            </script>
+        </div>
+    </div>
+
+
+{% endblock %}

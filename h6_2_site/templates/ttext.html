@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style type="text/css">
+        .box1{
+            height: 100px;
+            width: 200px;
+            background-color: yellowgreen;
+            float: left;
+            overflow: hidden;
+        }
+        .box2{
+            height: 120px;
+            width: 220px;
+            background-color: red;
+            overflow: hidden;
+        }
+        .clearfix:after{
+            /*必须要写这三句话*/
+            content: '.';
+            clear: both;
+            display: block;
+            height: 0;
+            visibility: hidden;
+        }
+    </style>
+</head>
+<body>
+    <div class="box1 clearfix"></div>
+    <div class="box2"></div>
+</body>
+</html>

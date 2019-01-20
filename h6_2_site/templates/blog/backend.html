@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    {% include 'blog/static_src.html' %}
+    <title>{% block title %}
+        后台管理
+    {% endblock %}</title>
+</head>
+<body style="background-color: #d7d7d7;">
+{% include 'blog/head_bar.html' with backend_active='active' %}
+<div class="page-header container-fluid white" style="margin-top: 10px    ;">
+    <h1 >{% block title2 %}
+        后台管理
+    {% endblock %}
+        {% csrf_token %}
+    </h1>
+</div>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-3">
+            <div class="panel panel-warning">
+                <div class="panel-heading">操作</div>
+                <div class="panel-body">
+                    <a href="" class='add'>添加文章</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-9">
+            {%  block main_area %}
+                <div class="article_list" style="background-color: white;border-radius: 5px">
+                    {% include 'blog/article_thumbnail_for_backend.html' %}
+                </div>
+                <script type="text/javascript">
+                    $(function () {
+                        $('a.add').click(function () {
+                            location.href='/backend/add_article/';
+                            return false;
+                        });
+
+                        $('a.edit').click(function () {
+                            location.href='/backend/edit_article/'+$(this).attr('target');
+                            return false;
+                        });
+                        $('a.remove').click(function () {
+                            let target =  $(this).attr('target');
+                            $.ajax({
+                                url:'/backend/remove_article/',
+                                type:'POST',
+                                data: {
+                                    csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val(),
+                                    target:target,
+                                },
+                                success: function (data) {
+                                    console.log(data.msg);
+                                    location.reload();
+                                }
+                            });
+                            return false;
+                        });
+                    })
+                </script>
+            {% endblock %}
+        </div>
+
+    </div>
+</div>
+</body>
+</html>

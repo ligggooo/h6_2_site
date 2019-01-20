@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>博客园首页</title>
+    {% include 'blog/static_src.html' %}
+
+
+</head>
+<body>
+{% include 'blog/head_bar.html' with index_active='active' %}
+{#    主体 #}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-sm-3">
+            <div class="panel panel-info">
+                <!-- Default panel contents -->
+                <div class="panel-heading">网站分类</div>
+                <ul class="list-group">
+                    <li class="list-group-item"><a href="">.NET技术</a></li>
+                    <li class="list-group-item"><a href="">编程语言</a></li>
+                    <li class="list-group-item"><a href="">软件设计</a></li>
+                    <li class="list-group-item"><a href="">Web 前端</a></li>
+                    <li class="list-group-item"><a href="">企业信息化</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="col-sm-6">
+            <div class="article_list">
+                {% include 'blog/article_thumbnail.html' %}
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="panel panel-warning">
+              <div class="panel-heading">最新新闻</div>
+                <ul class="list-group">
+                    <li class="list-group-item"><a href="">拼多多不哭，薅羊毛的江湖水太深</a></li>
+                    <li class="list-group-item"><a href="">还未推出 迪士尼流媒体服务就花了逾10亿美元</a></li>
+                    <li class="list-group-item"><a href="">IDC：亚马逊、谷歌和沃尔玛是去年IT支出最高的三</a></li>
+                    <li class="list-group-item"><a href="">苹果重新上架iPhone SE，这或许是「充值情怀」</a></li>
+                    <li class="list-group-item"><a href="">中国移动的eSIM支持Apple Watch了，这7个城市</a></li>
+                </ul>
+            </div>
+
+            <div class="panel panel-danger">
+              <div class="panel-heading">
+                <h3 class="panel-title">48小时热门</h3>
+              </div>
+              <ul class="list-group">
+                    <li class="list-group-item"><a href="">第一次离职</a></li>
+                    <li class="list-group-item"><a href="">ASP.NET Core API 接收参数去掉烦人的 [FromBody]</a></li>
+                    <li class="list-group-item"><a href="">恭贺微软技术俱乐部苏州站正式成立</a></li>
+                    <li class="list-group-item"><a href="">Redis in .NET Core 入门 (1)</a></li>
+                    <li class="list-group-item"><a href="">WebGL实现sprite精灵效果的GUI控件</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+</body>
+</html>

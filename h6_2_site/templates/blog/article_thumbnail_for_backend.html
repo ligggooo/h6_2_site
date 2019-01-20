@@ -1,0 +1,23 @@
+<style  type="text/css">
+
+</style>
+<table class="table">
+<tr>
+    <th>编号</th>
+    <th>标题</th>
+    <th>评论数</th>
+    <th>点赞数</th>
+    <th>编辑</th>
+    <th>删除</th>
+</tr>
+{% for article in articles %}
+    <tr>
+        <td>{{ article.nid }}</td>
+        <td><a href="/{{ user.username }}/articles/{{ article.nid }}">{{ article.title }}</a></td>
+        <td>{{ article.comment_count }}</td>
+        <td>{{ article.up_count }}</td>
+        <td><a href="" class = 'edit' target="{{ article.nid }}">编辑</a></td>
+        <td><a href="" class = 'remove' target="{{ article.nid }}">删除</a></td>
+    </tr>
+{% endfor %}
+</table>

@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>注册</title>
+    <link rel="stylesheet" href="/static/bs/css/bootstrap.min.css">
+    <script type="text/javascript" src="/static/js/jquery-3.3.1.min.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            $('#avatar').change(function () {
+                console.log(1);
+                let file_obj = this.files[0];
+                let reader =new FileReader();
+                reader.readAsDataURL(file_obj);
+                reader.onload=function(){
+                    console.log(reader.result);
+                    $('#avatar_img').attr('src',reader.result);
+                };
+            });
+            $('form').submit(function () {
+                let formdata = new FormData();
+                formdata.append('user',$('#id_user').val());
+                formdata.append('avatar',$('#avatar')[0].files[0]);
+                formdata.append('csrfmiddlewaretoken',$('input[name=csrfmiddlewaretoken]').val());
+                formdata.append('pwd',$('#id_pwd').val());
+                formdata.append('re_pwd',$('#id_re_pwd').val());
+                formdata.append('email',$('#id_email').val());
+                $.ajax({
+                    url:'/register/',
+                    type:'POST',
+                    contentType:false,
+                    processData:false,
+                    data:formdata,
+                    success:function (data) {
+                        console.log(data.msg, data.user);
+                        if (data.user){
+                            location.href=data.next;
+                        }else{
+                            $('span.error').text('');
+                            $.each(data.msg,function (field,error_list) {
+                                $('#id_'+field).next().text(error_list).css('color','red');
+                                if(field==='__all__'){
+                                    $('#id_re_pwd').next().text(error_list).css('color','red');
+                                }
+                                $('#id_'+field).parent().parent().addClass('has-error');
+                                setTimeout(function () {
+                                    $('#id_'+field+'+span[class=error]').text('');
+                                    $('#id_'+field).parent().parent().removeClass('has-error');
+                                },4000);
+                            })
+                        }
+                    }
+                });
+                return false;
+            })
+        })
+    </script>
+    <style type="text/css">
+        @media (min-width:1292px) {  .login .form_div{margin-top: 150px;}  }
+        @media (max-width:1292px) and (min-width:992px) {  .login .form_div{margin-top: 100px;}  }
+        @media (max-width:992px) {  .login .form_div{margin-top: 10px;}  }
+        .login .form_div{
+            border: #0f0f0f solid 1px;
+            padding: 20px;
+            border-radius: 4px;
+            background-color: #e6e6e6;
+        }
+
+        .control-label{
+            top:8px;
+        }
+        #error_msg{
+            color: red;
+            margin-left: 10px;
+        }
+        #avatar_img{
+            width: 60px;
+            height:60px;
+            margin-left: 25px;
+        }
+    </style>
+</head>
+<body>
+<div class="container login">
+    <div class="row">
+        <div class = 'col-lg-4 col-lg-offset-4 col-md-6 col-sm-6 col-xs-8 col-sm-offset-4 col-sm-offset-3 col-xs-offset-2 form_div'>
+            <div class="row">
+                <form class="col-xs-8">
+                {% csrf_token %}
+                {% for field in form %}
+                    <div class="form-group row">
+                        <label class="col-sm-3 control-label" for="{{ field.auto_id }}">{{ field.label }}</label>
+                        <div class="col-sm-9">
+                            {{ field }}<span class="error pull-right"></span>
+                        </div>
+                    </div>
+                {% endfor %}
+
+                <div class="form-group row">
+                    <div class="col-sm-offset-2 col-sm-10">
+                        <button class="btn btn-default">提交</button>
+                        <span id="error_msg"></span>
+                    </div>
+                </div>
+            </form>
+                <div class = 'col-xs-3'>
+             <div class="form-group row">
+                            <label class="col-sm-12 control-label pull-left" for="avatar">
+                                头像
+                                <img id='avatar_img' class="img-circle" src="/avatars/default.jpg" alt="">
+                            </label>
+                            <div class="col-sm-3">
+                                <input type="file" id = 'avatar' style="display: none;">
+                            </div>
+             </div>
+        </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+</body>
+</html>
