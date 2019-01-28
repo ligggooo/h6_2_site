@@ -35,8 +35,10 @@ def index(request):
         articles = paginator.page(1)
     except EmptyPage:
         articles = paginator.page(paginator.num_pages)
-    return render(request, 'blog/index.html', locals())
-
+    res = HttpResponse('你所在的区域不能访问该资源')
+    res.status_code = '403'
+    # return render(request, 'blog/index.html', locals())
+    return res
 
 def login(request):
     next_page = request.GET.get('next', '/index/')

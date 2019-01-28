@@ -17,6 +17,7 @@ from django.contrib import admin
 from django.urls import path,re_path
 from django.views.static import serve
 import blog.views
+import t01.views
 from h6_2_site import settings
 
 urlpatterns = [
@@ -44,5 +45,9 @@ urlpatterns = [
     re_path('^(?P<username>\w+)$', blog.views.user_site),
 
     #     配置media文件路径
-    re_path(r'media/(?P<path>.*)$',serve,{'document_root':settings.MEDIA_ROOT})
+    re_path(r'media/(?P<path>.*)$',serve,{'document_root':settings.MEDIA_ROOT}),
+
+    # 下面的是测试路径
+    re_path(r'fun/', t01.views.index),
+    path('test/', t01.views.test_view),
 ]

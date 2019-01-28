@@ -71,7 +71,8 @@ class Article(models.Model):
     #     关联
     user = models.ForeignKey(to='UserInfo', to_field='nid', on_delete=models.CASCADE)
     category = models.ForeignKey(to='Category', to_field='nid',
-                                 limit_choices_to={'blog__user': user},   # 不起作用
+                                 # limit_choices_to=models.Q(blog_id=user.blog_id),   # 不起作用
+                                 # limit_choices_to=models.Q(blog_id=1),  # 起作用
                                  null=True, on_delete=models.CASCADE)
     # allowed to be null
     # 多多关系 通过自定义表格完成 这么做的目的是提高可控性吗？ 也可以让orm自动生成
