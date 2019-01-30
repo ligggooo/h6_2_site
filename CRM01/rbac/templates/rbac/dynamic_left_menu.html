@@ -1,0 +1,37 @@
+测试菜单
+{% load staticfiles %}
+
+<div class="panel panel-info" id="dynamic_menu">
+    {% for item in menu_dict.values %}
+        <div class="panel-heading dynamic_menu_title"><span class="icon-wrap"><i class="fa {{ item.icon }}"></i></span> {{ item.title }}</div>
+        <div class="panel-body list-group body {{ item.class }}" style="padding: 0;margin-left: 10px">
+            {% for per in item.subs %}
+                <a class="lvl2menu {{ per.class }}" href="{{ per.url }}">{{ per.title }}</a>
+            {% endfor %}
+        </div>
+    {% endfor %}
+</div>
+<script type="text/javascript">
+    $(function (){
+        $('.dynamic_menu_title').click(function () {
+            $(this).next().toggleClass('hide');
+        })
+    });
+</script>
+<style type="text/css">
+    #dynamic_menu .dynamic_menu_title{
+        border-top: #2F72AB solid 2px;
+    }
+    #dynamic_menu .dynamic_menu_title:hover{
+        cursor: pointer;
+    }
+    .lvl2menu{
+        display: block;
+        padding: 5px 5px 5px 20px;
+    }
+    .lvl2menu.active{
+        background-color: #2F72AB;
+        border-left: orange solid 2px;
+        color: #bcdcf7;
+    }
+</style>

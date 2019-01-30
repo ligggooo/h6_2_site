@@ -1,3 +1,10 @@
 from django.contrib import admin
 
-# Register your models here.
+
+from rbac.models import *
+admin.site.register(Menu)
+admin.site.register(Permission)
+admin.site.register(UserInfo)
+admin.site.register(Role)
+
+

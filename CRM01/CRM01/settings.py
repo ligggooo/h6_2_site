@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rbac.apps.RbacConfig',
+    'web.apps.WebConfig',
 ]
 
 MIDDLEWARE = [
@@ -48,6 +49,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'rbac.middleware.rbac.RBACMiddleware',
 ]
 
 ROOT_URLCONF = 'CRM01.urls'
@@ -105,7 +107,8 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/2.1/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+# LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'zh-hans'
 
 TIME_ZONE = 'UTC'
 
@@ -120,3 +123,14 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
 STATIC_URL = '/static/'
+
+# RBAC
+INDEX_NAME = 'custom_list'
+RBAC_MENU_KEY = 'rbac_menu'
+RBAC_PERMISSION_KEY = 'rbac_permission'
+URL_WHITE_LIST = [
+    '^login/$',
+    '^logout/$',
+    '^admin/.*$',
+    '^.*test/$',
+]

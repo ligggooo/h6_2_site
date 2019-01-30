@@ -1,0 +1,16 @@
+{% load staticfiles %}
+{% load xx %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    测试页面  RBAC
+    <img src="{% static 'rbac/zoro.jpeg' %}" alt="">
+    <a href="{% url 'rbac:test' %}">rbac test</a>
+    <a href="{% url 'web:test' %}">web test</a>
+    {% xxx %}
+</body>
+</html>

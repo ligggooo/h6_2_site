@@ -1,0 +1,25 @@
+{% extends 'layout.html' %}
+{% block content %}
+    <div class="luffy-container">
+        <div class="alert alert-danger" role="alert" style="font-size: 19px">
+        </div>
+        <div class="panel panel-danger" style="font-size: 19px">
+            <div class="panel-heading">
+                警告
+            </div>
+            <div class="panel-body">
+                删除之后不可恢复，确定要删除这个条目吗？
+            </div>
+            <div class="panel-body" style="margin-left: 30px">{{ msg.item }}</div>
+            <div class="panel-footer">
+                <form action="" method="post">
+                <a href="{{ msg.back }}" class="btn btn-success">取消</a>
+                    {% csrf_token %}
+                    <input type="submit" class="btn btn-danger" value="确认">
+                </form>
+            </div>
+
+        </div>
+    </div>
+
+{% endblock %}

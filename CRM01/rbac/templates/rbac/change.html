@@ -1,0 +1,45 @@
+{% extends 'layout.html' %}
+{% block content %}
+    <style type="text/css">
+    ul label li{
+        float: left;
+        width: 70px;
+        line-height: 20px;
+        padding: 5px;
+        cursor: pointer;
+    }
+    li label i{
+        font-size: large;
+    }
+    ul li label{
+        width: 100%;
+    }
+    ul li label:hover{
+        background-color: #ffb43b;
+    }
+    ul{
+        list-style: none;
+    }
+    </style>
+    <div class="luffy-container">
+    <form action="" method="post" class="form-horizontal">
+        {% csrf_token %}
+        {% for field in form %}
+            <div class="form-group">
+            <label for="" class="col-sm-2 control-label">{{ field.label }}</label>
+            <div class="col-sm-10">
+                {{ field }} <span style="color:red">{{ field.errors }}</span>
+            </div>
+        </div>
+        {% endfor %}
+
+        <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
+                <input type="submit" value= "提交" id ='submit-btn'>
+            </div>
+        </div>
+
+    </form>
+    </div>
+
+{% endblock %}
