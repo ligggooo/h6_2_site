@@ -7,8 +7,8 @@
 @Time    :   2019/1/30 19:40
 @Desc    :
 '''
-from django.forms import ModelForm,ValidationError,TextInput,RadioSelect
-from rbac.models import Menu
+from django.forms import ModelForm,ValidationError,TextInput,RadioSelect,Select
+from rbac.models import Menu,Permission
 from django.utils.safestring import mark_safe
 
 ICON_LIST = [
@@ -102,7 +102,41 @@ class MenuForm(ModelForm):
         fields = ['title', 'icon']
         widgets = {
             'title': TextInput(attrs={'class': 'form-control'}),
-            'icon': RadioSelect(choices=ICON_LIST, attrs={'class': 'clearfix'})
+            'icon': RadioSelect(choices=ICON_LIST, attrs={'class': 'clearfix icon_select'})
         }
+
+class SecondMenuForm(ModelForm):
+    def __init__(self,*args,**kwargs):
+        super().__init__(*args, **kwargs)
+        # menus = Menu.objects.values_list('id', 'title')
+        # self.fields['menu'] = Select(choices=menus, attrs={'class': 'form-control'})
+
+    class Meta:
+        model = Permission
+        fields = ['title', 'url', 'name', 'menu']
+        widgets = {
+            'title': TextInput(attrs={'class': 'form-control'}),
+            'url': TextInput(attrs={'class': 'form-control'}),
+            'name': TextInput(attrs={'class': 'form-control'}),
+            'menu': Select(attrs={'class': 'form-control'})
+        }
+
+
+class PermissionForm(ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # parents = Permission.objects.filter(menu_id__isnull=False).values_list('id','title')
+        # self.fields['pid'].widget = Select(choices=parents, attrs={'class': 'form-control'})
+
+    class Meta:
+        model = Permission
+        fields = ['title', 'url', 'name']#, 'pid']
+        widgets = {
+            'title': TextInput(attrs={'class': 'form-control'}),
+            'url': TextInput(attrs={'class': 'form-control'}),
+            'name': TextInput(attrs={'class': 'form-control'}),
+            # 'pid': Select(attrs={'class': 'form-control'})
+        }
+
 
 

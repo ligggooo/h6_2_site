@@ -8,7 +8,6 @@
 @Desc    :
 '''
 from collections import OrderedDict
-
 from django.template import Library
 from django.shortcuts import reverse
 from django.conf import settings
@@ -49,4 +48,11 @@ def bread_crumb(request):
 def has_permission(request, name):  # filter的第一个参数时过滤器前面的对象
     if name in request.session[settings.RBAC_PERMISSION_KEY]:
         return True
+
+
+@register.simple_tag
+def url_param_pack(request, name,*args,**kwargs):
+    from rbac.service import url_pack
+    return url_pack.url_param_pack(request, name, *args, **kwargs)
+
 
