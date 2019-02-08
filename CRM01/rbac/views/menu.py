@@ -9,7 +9,8 @@
 '''
 from django.shortcuts import HttpResponse,render,reverse,redirect
 from rbac.models import *
-from rbac.forms.menu import MenuForm,SecondMenuForm,PermissionForm
+from rbac.forms.menu import MenuForm,SecondMenuForm,PermissionForm,\
+    MultiAddPermissionForm,MultiAddPermissionUpdateForm
 from rbac.service import url_pack
 
 
@@ -157,8 +158,165 @@ def permission_del(request, permission_id):
         return redirect(back)
 
 # ---------------------------------------------------------
+from django.forms import formset_factory
+
+def multi_permissions_add(request):
+    MultiAddPermissionFormSet = formset_factory(MultiAddPermissionForm, extra=4)
+    if request.method == 'GET':
+        formset = MultiAddPermissionFormSet()
+        return render(request, 'rbac/multi_permission_add.html', {'formset': formset})
+    else:
+        formset = MultiAddPermissionFormSet(data=request.POST)
+        print(formset.total_form_count())
+        valid_flag = True
+        for form in formset:
+            if form.is_valid():
+                if not form.cleaned_data:
+                    continue
+                try:
+                    obj = Permission(**form.cleaned_data)
+                    obj.validate_unique()
+                    obj.save()
+                except Exception as e:
+                    form.errors.update(e)
+                    valid_flag = False
+            else:
+                valid_flag = False
+        if valid_flag:
+            return HttpResponse('ok')
+        else:
+            return render(request, 'rbac/multi_permission_add.html', {'formset': formset})
+
+def multi_permissions_edit(request):
+    MultiAddPermissionFormSet = formset_factory(MultiAddPermissionUpdateForm, extra=0)
+    if request.method == 'GET':
+        formset = MultiAddPermissionFormSet(initial=Permission.objects.all().values())
+        return render(request, 'rbac/multi_permission_add.html', {'formset': formset})
+    else:
+        formset = MultiAddPermissionFormSet(data=request.POST, initial=Permission.objects.all().values())
+        # 因为初始字段的int和data字段的str差异，导致这个地方无法正确判断has_changed
+        print(formset.total_form_count())
+        valid_flag = True
+        for form in formset:
+            if form.is_valid() and form.has_changed():
+                row = form.cleaned_data
+                if not form.cleaned_data:
+                    continue
+                try:
+                    permission_id = row.pop('id')
+                    per_obj = Permission.objects.filter(id=permission_id).first()
+                    print(row)
+                    for k,v in row.items():
+                        print(k,v)
+                        setattr(per_obj,k,v)
+                    per_obj.validate_unique()
+                    per_obj.save()
+                except Exception as e:
+                    form.errors.update(e)
+                    valid_flag = False
+            else:
+                valid_flag = False
+        if valid_flag:
+            return HttpResponse('ok')
+        else:
+            return render(request, 'rbac/multi_permission_add.html', {'formset': formset})
+
 def multi_permissions(request):
-    pass
-# todo
+    from rbac.service.url_search import find_all_urls
+    post_type = request.GET.get('type')
+
+    permissions_to_add_form = None
+    permissions_to_edit_form = None
+
+    if request.method == 'POST' and post_type == 'add':
+        MultiAddPermissionFormSet = formset_factory(MultiAddPermissionForm, extra=0)
+        formset = MultiAddPermissionFormSet(data=request.POST)
+        valid_flag = True
+        to_add = []
+        for form in formset:
+            if form.is_valid():
+                if not form.cleaned_data:
+                    continue
+                try:
+                    obj = Permission(**form.cleaned_data)
+                    obj.validate_unique()
+                    to_add.append(obj)
+                except Exception as e:
+                    form.errors.update(e)
+                    valid_flag = False
+            else:
+                valid_flag = False
+        if valid_flag:
+            Permission.objects.bulk_create(to_add,batch_size=100)
+        else:
+            permissions_to_add_form = formset
+
+    if request.method == 'POST' and post_type == 'edit':
+        PermissionFormSet = formset_factory(MultiAddPermissionUpdateForm, extra=0)
+        formset = PermissionFormSet(data=request.POST)
+        valid_flag = True
+        to_add = []
+        for form in formset:
+            if form.is_valid():
+                row = form.cleaned_data
+                if not form.cleaned_data:
+                    continue
+                try:
+                    permission_id = row.pop('id')
+                    per_obj = Permission.objects.filter(id=permission_id).first()
+                    # print(row)
+                    changed = False
+                    for k, v in row.items():
+                        # print(k, v)
+                        v_new = getattr(per_obj,k)
+                        if not v and not v_new:
+                            continue
+                        if str(v) != str(v_new):
+                            setattr(per_obj, k, v)
+                            changed = True
+                    if changed:
+                        per_obj.validate_unique()
+                        per_obj.save()
+                    else:
+                        print('没变')
+                except Exception as e:
+                    form.errors.update(e)
+                    valid_flag = False
+            else:
+                valid_flag = False
+        if not valid_flag:
+            permissions_to_edit_form = formset
+
+    urls_in_project = find_all_urls()
+    urls_in_db = Permission.objects.all()
+
+    urls_in_project_set = set(urls_in_project.keys())
+    urls_in_db_set = set(x['name'] for x in urls_in_db.values('name'))
+
+    # To delete
+    permissions_to_delete_set = urls_in_db_set - urls_in_project_set
+    permissions_to_delete = [x for x in urls_in_db if x.name in permissions_to_delete_set]
+
+    # To add
+    if not permissions_to_add_form:
+        permissions_to_add_set = urls_in_project_set - urls_in_db_set
+        permissions_to_add = [{'name':x[0],'url':x[1]} for x in urls_in_project.items() if x[0] in permissions_to_add_set]
+        MultiAddPermissionFormSet = formset_factory(MultiAddPermissionForm, extra=0)
+        permissions_to_add_form = MultiAddPermissionFormSet(initial=permissions_to_add)
 
 
+    # To update
+    if not permissions_to_edit_form:
+        permissions_to_update_set = urls_in_project_set & urls_in_db_set
+        permissions_to_update = urls_in_db.filter(name__in=permissions_to_update_set).values()
+        MultiEditPermissionFormSet = formset_factory(MultiAddPermissionUpdateForm, extra=0)
+        permissions_to_edit_form = MultiEditPermissionFormSet(initial=permissions_to_update)
+    return render(request, 'rbac/permissions_change.html', locals())
+
+
+def multi_permission_del(request, permission_id):
+    obj = Permission.objects.filter(id=permission_id).first()
+    if obj:
+        obj.delete()
+    back = url_pack.url_param_unpack(request, 'rbac:multi_permissions')
+    return redirect(back)

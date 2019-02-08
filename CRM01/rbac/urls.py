@@ -14,7 +14,7 @@ from rbac.views import role,user,menu
 
 app_name = 'rbac'
 urlpatterns = [
-    re_path('^test/$', test,name='test'),
+    re_path('^test/$', test, name='test'),
 
     re_path('^role/list/$',role.role_list, name='role_list'),
     re_path('^role/add/$',role.role_add, name='role_add'),
@@ -40,6 +40,9 @@ urlpatterns = [
     re_path(r'^permission/edit/(?P<permission_id>\d+)/$', menu.permission_edit, name='permission_edit'),
     re_path(r'^permission/del/(?P<permission_id>\d+)/$', menu.permission_del, name='permission_del'),
 
+    re_path(r'^multi/permissions/add/$', menu.multi_permissions_add, name='multi_permissions_add'),
+    re_path(r'^multi/permissions/edit/$', menu.multi_permissions_edit, name='multi_permissions_edit'),
     re_path(r'^multi/permissions/$', menu.multi_permissions, name='multi_permissions'),
+    re_path(r'^multi/permissions/del/(?P<permission_id>\d+)/$', menu.multi_permission_del, name='multi_permission_del'),
 ]
 

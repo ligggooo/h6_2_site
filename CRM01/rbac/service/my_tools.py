@@ -17,11 +17,29 @@ def bypass(func):
     return bypassed_func
 
 
+from collections import OrderedDict
+from django.urls import URLResolver,URLPattern
 
-if __name__=='__main__':
+def get_all(patterns,ans):
+    for item in patterns:
+        if isinstance(item, URLResolver):
+            print('yes', item.namespace,item.pattern)
+            get_all(item.url_patterns,ans)
+        elif isinstance(item, URLPattern):
+            print('no', item.name)
+        else:
+            print('?????????????',item.name)
 
-    @bypass
-    def zz(sadas):
-        print(sadas)
 
-    zz()
+
+def find_all_urls():
+    ans = []# OrderedDict()
+    from django.conf import settings
+
+    # print(settings.ROOT_URLCONF)
+    a= __import__(settings.ROOT_URLCONF)
+    get_all(a.urls.urlpatterns,ans)
+
+
+# if __name__=='__main__':
+#     find_all_urls()

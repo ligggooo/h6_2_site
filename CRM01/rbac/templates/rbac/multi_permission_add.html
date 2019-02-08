@@ -1,0 +1,39 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+    <div class="luffy-container">
+        <form action="" method="post">
+            {% csrf_token %}
+            {{ formset.management_form }}
+            <table class="table table-hover">
+                <thead>
+                <tr class="info">
+                    <th>#</th>
+                    {% for field in formset.0 %}
+                        <th class="text-center">{{ field.label }}</th>
+                    {% endfor %}
+                </tr>
+                </thead>
+                <tbody>
+                {% for form in formset %}
+                    <tr class="warning">
+                        <td>{{ forloop.counter }}</td>
+                        {% for field in form %}
+                            <td>{{ field }}
+                                <span class="error">{{ field.errors.0}}</span></td>
+                        {% endfor %}
+                    </tr>
+
+                {% endfor %}
+                </tbody>
+            </table>
+            <input type="submit" class="btn btn-success" value="Submit">
+        </form>
+    </div>
+    <style type="text/css">
+        .error{
+            color: red;
+            line-height: 15px;
+        }
+    </style>
+{% endblock %}

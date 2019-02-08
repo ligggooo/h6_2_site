@@ -7,7 +7,8 @@
 @Time    :   2019/1/30 19:40
 @Desc    :
 '''
-from django.forms import ModelForm,ValidationError,TextInput,RadioSelect,Select
+from django.forms import ModelForm,Form,ValidationError,TextInput,\
+    RadioSelect,Select,CharField,ChoiceField,HiddenInput,IntegerField
 from rbac.models import Menu,Permission
 from django.utils.safestring import mark_safe
 
@@ -138,5 +139,60 @@ class PermissionForm(ModelForm):
             # 'pid': Select(attrs={'class': 'form-control'})
         }
 
+class MultiAddPermissionForm(Form):
+    title = CharField(
+        widget=TextInput(attrs={'class': "form-control"})
+    )
+    url = CharField(
+        widget=TextInput(attrs={'class': "form-control"})
+    )
+    name = CharField(
+        widget=TextInput(attrs={'class': "form-control"})
+    )
+    menu_id = ChoiceField(
+        choices=[(None, '-----')],
+        widget=Select(attrs={'class': "form-control"}),
+        required=False,
 
+    )
+    pid_id = ChoiceField(
+        choices=[(None, '-----')],
+        widget=Select(attrs={'class': "form-control"}),
+        required=False,
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['menu_id'].choices += Menu.objects.values_list('id', 'title')
+        self.fields['pid_id'].choices += Permission.objects.filter(pid__isnull=True).exclude(
+            menu__isnull=True).values_list('id', 'title')
+
+
+class MultiAddPermissionUpdateForm(Form):
+    id = IntegerField(widget=HiddenInput(),label='序列号')   # 编辑表单多了一个隐藏的id字段
+    title = CharField(
+        widget=TextInput(attrs={'class': "form-control"}),label='标题'
+    )
+    url = CharField(
+        widget=TextInput(attrs={'class': "form-control"}),label='url'
+    )
+    name = CharField(
+        widget=TextInput(attrs={'class': "form-control"}),label='名称'
+    )
+    menu_id = ChoiceField(
+        choices=[(None, '-----')],
+        widget=Select(attrs={'class': "form-control"}),
+        required=False,label='属菜单'
+    )
+    pid_id = ChoiceField(
+        choices=[(None, '-----')],
+        widget=Select(attrs={'class': "form-control"}),
+        required=False,label='关联权限'
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['menu_id'].choices += Menu.objects.values_list('id', 'title')
+        self.fields['pid_id'].choices += Permission.objects.filter(pid__isnull=True).exclude(
+            menu__isnull=True).values_list('id', 'title')
 

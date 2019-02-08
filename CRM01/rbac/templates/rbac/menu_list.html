@@ -79,10 +79,16 @@
             <div class="panel panel-default menu3">
                 <div class="panel-heading">
                     <span><i class="fa fa-bolt" aria-hidden="true"></i> 子权限菜单</span>
+                <div class="btn-group pull-right" role="group" aria-label="...">
+
                     {% if pid is not None %}
-                        <a href="{% url_param_pack request 'rbac:permission_add' parent_id=pid %}" class="btn btn-success btn-xs pull-right" style="margin-top: -2px">
+                        <a href="{% url_param_pack request 'rbac:permission_add' parent_id=pid %}" class="btn btn-success btn-xs" style="margin-top: -2px">
                             <i class="fa fa-plus"></i> 添加</a>
                     {% endif %}
+                        <a href="{% url_param_pack request 'rbac:multi_permissions'%}" class="btn btn-info btn-xs" style="margin-top: -2px">
+                                    <i class="fa fa-arrow-circle-up"></i> 批量操作</a>
+                </div>
+
 
                 </div>
                 <table class="table table-hover">

@@ -18,7 +18,7 @@ from django.urls import path,include,re_path
 from web.views.customer import customer_list
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    # path('admin/', admin.site.urls),
     re_path('^rbac/', include('rbac.urls', namespace='rbac')),
     re_path('^', include('web.urls', namespace='web'))
 ]
